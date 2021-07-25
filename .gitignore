@@ -2,3 +2,4 @@ node_modules/
 .idea/
 xingyuan-3e345-firebase-adminsdk-s93b3-3817033ca0.json
 *.env
+key.txt
