@@ -13,10 +13,14 @@ admin.initializeApp({
 const db = admin.firestore();
 
 app.get("/postacc", async (req, res) => {
-  await db.collection("users").add({
-    name: "ybfrompath",
-    email: "path@email.com",
-  });
+  try {
+    await db.collection("users").add({
+      name: "ybfrompath",
+      email: "path@email.com",
+    });
+  } catch (e) {
+    res.send("an error occurred");
+  }
   res.send("Successfully added to database");
 });
 
