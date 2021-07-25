@@ -17,6 +17,11 @@ app.get("/", (req, res) => {
   res.send("Hello world");
 });
 
+app.get("/getusers", async (req, res) => {
+  const users = await db.collection("users").get();
+  res.send(users.docs[0]);
+});
+
 app.get("/postacc", (req, res) => {
   db.collection("users")
     .add({
