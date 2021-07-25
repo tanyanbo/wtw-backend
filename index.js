@@ -1,7 +1,8 @@
+require("dotenv").config({ path: `${__dirname}/config.env` });
 const express = require("express");
 const app = express();
 const admin = require("firebase-admin");
-//hello
+
 admin.initializeApp({
   credential: admin.credential.cert({
     projectId: process.env.FIREBASE_PROJECT_ID,
@@ -12,16 +13,22 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
-app.get("/postacc", async (req, res) => {
-  try {
-    await db.collection("users").add({
-      name: "ybfrompath",
-      email: "path@email.com",
+app.get("/", (req, res) => {
+  res.send("Hello world");
+});
+
+app.get("/postacc", (req, res) => {
+  db.collection("users")
+    .add({
+      name: "TESTUSER",
+      email: "TESTING@EMAIL.COM",
+    })
+    .then((_) => {
+      res.send("Successfully added to database");
+    })
+    .catch((e) => {
+      res.send("An error occured");
     });
-  } catch (e) {
-    res.send("an error occurred");
-  }
-  res.send("Successfully added to database");
 });
 
 const PORT = process.env.PORT || 5000;
