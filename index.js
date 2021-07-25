@@ -27,7 +27,7 @@ app.get("/postacc", (req, res) => {
       res.send("Successfully added to database");
     })
     .catch((e) => {
-      res.send("An error occured");
+      res.send(e);
     });
 });
 
