@@ -18,8 +18,12 @@ app.get("/", (req, res) => {
 });
 
 app.get("/getusers", async (req, res) => {
-  const users = await db.collection("users").get();
-  res.send(users.docs[0]);
+  try {
+    const users = await db.collection("users").get();
+    res.send(users.docs[0]);
+  } catch (e) {
+    res.send(e);
+  }
 });
 
 app.get("/postacc", (req, res) => {
