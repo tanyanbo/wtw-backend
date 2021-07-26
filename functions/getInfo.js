@@ -1,4 +1,4 @@
-const getInfo = async (req, res) => {
+const getInfo = (req, res) => {
   res.json({
     status: "Success",
     data: {

@@ -8,12 +8,14 @@ const addNickname = require("./functions/addNickname");
 const getWish = require("./functions/getWish");
 const createWish = require("./functions/createWish");
 const updateWish = require("./functions/updateWish");
+const getInfo = require("./functions/getInfo");
 
 app.use(express.json());
 
 app.post("/signin", signInOrRegister);
 app.get("/signout", authMiddleware, signOut);
 app.post("/nickname", authMiddleware, addNickname);
+app.get("/info", authMiddleware, getInfo);
 
 app.get("/wish", authMiddleware, getWish);
 app.post("/wish", authMiddleware, createWish);
