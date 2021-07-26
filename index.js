@@ -1,5 +1,3 @@
-import authMiddleware from "./middlewares/authMiddleware";
-
 const express = require("express");
 const app = express();
 const admin = require("firebase-admin");
@@ -15,6 +13,8 @@ admin.initializeApp({
 const db = admin.firestore();
 
 app.use(express.json());
+
+const authMiddleware = require("./middlewares/authMiddleware");
 
 app.get("/", authMiddleware, (req, res) => {
   res.send("Hello world");
