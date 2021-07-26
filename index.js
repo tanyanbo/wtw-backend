@@ -2,8 +2,9 @@ require("dotenv").config({ path: `${__dirname}/config.env` });
 const express = require("express");
 const app = express();
 const admin = require("firebase-admin");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
+
+const { signInOrRegister } = require("./functions/auth");
+const authMiddleware = require("./middlewares/authMiddleware");
 
 admin.initializeApp({
   credential: admin.credential.cert({
@@ -17,81 +18,11 @@ const db = admin.firestore();
 
 app.use(express.json());
 
-const authMiddleware = require("./middlewares/authMiddleware");
-
 app.get("/", authMiddleware, (req, res) => {
-  res.send("Hello world");
+  res.send(`The user's id is: ${req.body.id}`);
 });
 
-app.post("/signin", async (req, res) => {
-  const { phone, code } = req.body;
-  try {
-    const users = await db
-      .collection("users")
-      .where("phone", "==", phone)
-      .get();
-
-    let dbCode;
-    let id;
-
-    users.forEach((doc) => {
-      id = doc.id;
-      dbCode = doc.data().code;
-    });
-
-    if (!users.empty) {
-      // user exists
-      const isMatch = await bcrypt.compare(code, dbCode);
-
-      if (isMatch) {
-        // code is correct
-        const token = jwt.sign({ id }, process.env.JWT_PRIVATE_KEY, {
-          expiresIn: "7 days",
-        });
-
-        await db.collection("users").doc(id).update({ token });
-
-        res.status(200).json({
-          status: "success",
-          message: `Id of new user: ${id}`,
-          accessToken: token,
-        });
-      } else {
-        // code is incorrect
-        res.status(401).json({
-          status: "fail",
-          message: "Incorrect phone number or verification code",
-        });
-      }
-    } else {
-      // user does not exist
-      const hashedCode = await bcrypt.hash(code, 12);
-
-      const newUser = await db.collection("users").add({
-        phone,
-        code: hashedCode,
-      });
-
-      const token = jwt.sign({ id: newUser.id }, process.env.JWT_PRIVATE_KEY, {
-        expiresIn: "7 days",
-      });
-
-      await newUser.update({ token });
-
-      res.status(200).json({
-        status: "success",
-        message: `Id of new user: ${newUser.id}`,
-        accessToken: token,
-      });
-    }
-  } catch (e) {
-    console.log(e);
-    res.status(400).json({
-      status: "fail",
-      message: "Failed to sign in",
-    });
-  }
-});
+app.post("/signin", signInOrRegister);
 
 app.get("/getusers", async (req, res) => {
   try {
@@ -114,6 +45,14 @@ app.get("/postacc", (req, res) => {
     .catch((e) => {
       res.send(e);
     });
+});
+
+// Global error handling middleware
+app.use((err, req, res, next) => {
+  res.status(401).json({
+    status: "fail",
+    message: "from global error handling middleware",
+  });
 });
 
 const PORT = process.env.PORT || 5000;
