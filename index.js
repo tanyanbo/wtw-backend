@@ -2,9 +2,10 @@
 const express = require("express");
 const app = express();
 
-const { signInOrRegister } = require("./functions/auth");
+const { signInOrRegister, signOut } = require("./functions/auth");
 const authMiddleware = require("./middlewares/authMiddleware");
 const db = require("./firebase/firestore");
+const addNickname = require("./functions/addNickname");
 
 app.use(express.json());
 
@@ -13,6 +14,8 @@ app.get("/", authMiddleware, (req, res) => {
 });
 
 app.post("/signin", signInOrRegister);
+app.post("/nickname", authMiddleware, addNickname);
+app.get("/signout", authMiddleware, signOut);
 
 app.get("/getusers", async (req, res) => {
   try {
@@ -39,9 +42,9 @@ app.get("/postacc", (req, res) => {
 
 // Global error handling middleware
 app.use((err, req, res, _) => {
-  res.status(401).json({
-    status: "fail",
-    message: "from global error handling middleware",
+  res.status(err.status ?? 401).json({
+    status: "Fail",
+    message: err.message ?? "from global error handling middleware",
   });
 });
 

@@ -1,8 +1,9 @@
 const jwt = require("jsonwebtoken");
+const db = require("../firebase/firestore");
 
 const authMiddleware = (req, res, next) => {
   if (!req.header("Authorization")) {
-    res.status(403).json({
+    res.status(401).json({
       status: "fail",
       message: "Please provide your access token",
     });
@@ -12,10 +13,30 @@ const authMiddleware = (req, res, next) => {
 
   jwt.verify(token, process.env.JWT_PRIVATE_KEY, (err, decoded) => {
     if (err) {
+      err.status = 401;
+      err.message = "You are not authenticated";
       next(err);
     }
-    req.body.id = decoded.id;
-    next();
+    db.collection("users")
+      .doc(decoded.id)
+      .get()
+      .then((user) => {
+        if (user.data().token === token) {
+          req.body.id = decoded.id;
+          next();
+        } else {
+          res.status(401).json({
+            status: "Fail",
+            message: "You are not authenticated",
+          });
+        }
+      })
+      .catch((err) => {
+        res.status(500).json({
+          status: "Fail",
+          message: "Internal server error",
+        });
+      });
   });
 };
 
