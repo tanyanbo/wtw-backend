@@ -4,41 +4,20 @@ const app = express();
 
 const { signInOrRegister, signOut } = require("./functions/auth");
 const authMiddleware = require("./middlewares/authMiddleware");
-const db = require("./firebase/firestore");
 const addNickname = require("./functions/addNickname");
+const getWish = require("./functions/getWish");
+const createWish = require("./functions/createWish");
+const updateWish = require("./functions/updateWish");
 
 app.use(express.json());
 
-app.get("/", authMiddleware, (req, res) => {
-  res.send(`The user's id is: ${req.body.id}`);
-});
-
 app.post("/signin", signInOrRegister);
-app.post("/nickname", authMiddleware, addNickname);
 app.get("/signout", authMiddleware, signOut);
+app.post("/nickname", authMiddleware, addNickname);
 
-app.get("/getusers", async (req, res) => {
-  try {
-    const users = await db.collection("users").get();
-    res.send(users.docs[0]);
-  } catch (e) {
-    res.send(e);
-  }
-});
-
-app.get("/postacc", (req, res) => {
-  db.collection("users")
-    .add({
-      name: "TESTUSER",
-      email: "TESTING@EMAIL.COM",
-    })
-    .then((_) => {
-      res.send("Successfully added to database");
-    })
-    .catch((e) => {
-      res.send(e);
-    });
-});
+app.get("/wish", authMiddleware, getWish);
+app.post("/wish", authMiddleware, createWish);
+app.put("/wish", authMiddleware, updateWish);
 
 // Global error handling middleware
 app.use((err, req, res, _) => {

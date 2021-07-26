@@ -23,6 +23,7 @@ const authMiddleware = (req, res, next) => {
       .then((user) => {
         if (user.data().token === token) {
           req.body.id = decoded.id;
+          req.body.userNickname = user.data().nickname;
           next();
         } else {
           res.status(401).json({
