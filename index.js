@@ -4,6 +4,7 @@ const app = express();
 
 const { signInOrRegister } = require("./functions/auth");
 const authMiddleware = require("./middlewares/authMiddleware");
+const db = require("./firebase/firestore");
 
 app.use(express.json());
 
@@ -37,7 +38,7 @@ app.get("/postacc", (req, res) => {
 });
 
 // Global error handling middleware
-app.use((err, req, res, next) => {
+app.use((err, req, res, _) => {
   res.status(401).json({
     status: "fail",
     message: "from global error handling middleware",
