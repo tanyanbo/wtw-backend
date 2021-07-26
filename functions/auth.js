@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const db = require("../firebase/firestore");
 
 const signInOrRegister = async (req, res) => {
   const { phone, code } = req.body;
