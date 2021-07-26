@@ -1,12 +1,11 @@
-const express = require("express");
-
 const authMiddleware = (req, res, next) => {
-  if (!req.body.token) {
+  if (!req.header("Authorization")) {
     res.status(403).json({
       status: "fail",
       message: "Please provide your access token",
     });
   }
+  const token = req.header("Authorization").replace("Bearer ", "");
 };
 
-export default authMiddleware;
+module.exports = authMiddleware;
