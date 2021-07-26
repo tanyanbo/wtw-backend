@@ -6,7 +6,7 @@ const updateWish = async (req, res) => {
     await db
       .collection("wishes")
       .doc(wishId)
-      .update({ ...params });
+      .update({ ...params, takenBy: req.body.id });
 
     res.json({
       status: "Success",
