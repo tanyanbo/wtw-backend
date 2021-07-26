@@ -52,6 +52,7 @@ const signInOrRegister = async (req, res) => {
       const newUser = await db.collection("users").add({
         phone,
         code: hashedCode,
+        coins: 20,
       });
 
       const token = jwt.sign({ id: newUser.id }, process.env.JWT_PRIVATE_KEY, {
