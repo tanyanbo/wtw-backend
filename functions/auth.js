@@ -4,6 +4,7 @@ const db = require("../firebase/firestore");
 
 const signInOrRegister = async (req, res) => {
   const { phone, code } = req.body;
+  console.log(phone, code);
   try {
     const users = await db
       .collection("users")
@@ -17,6 +18,8 @@ const signInOrRegister = async (req, res) => {
       id = doc.id;
       dbCode = doc.data().code;
     });
+
+    console.log(`dbCode: ${dbCode}`);
 
     if (!users.empty) {
       // user exists
@@ -35,6 +38,7 @@ const signInOrRegister = async (req, res) => {
           message: `Id of new user: ${id}`,
           accessToken: token,
           isNewUser: false,
+          id,
         });
       } else {
         // code is incorrect
@@ -63,6 +67,7 @@ const signInOrRegister = async (req, res) => {
         message: `Id of new user: ${newUser.id}`,
         accessToken: token,
         isNewUser: true,
+        id: newUser.id,
       });
     }
   } catch (e) {
