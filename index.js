@@ -1,4 +1,5 @@
-// require("dotenv").config({ path: `${__dirname}/config.env` });
+import authMiddleware from "./middlewares/authMiddleware";
+
 const express = require("express");
 const app = express();
 const admin = require("firebase-admin");
@@ -13,7 +14,9 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
-app.get("/", (req, res) => {
+app.use(express.json());
+
+app.get("/", authMiddleware, (req, res) => {
   res.send("Hello world");
 });
 
